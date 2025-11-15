@@ -99,18 +99,26 @@ export default function OnboardingModal({ onComplete, onShowForm, showForm }: On
           </div>
 
           <h2 className="text-4xl font-bold text-gray-900 mb-2">
-            Inco Circle
+            Ready to Join?
           </h2>
           <p className="text-gray-600 mb-8 text-lg">
-            Connect with privacy advocates in Web3
+            Add yourself to the circle and connect with privacy advocates in Web3
           </p>
 
-          <button
-            onClick={onShowForm}
-            className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-semibold py-4 px-6 rounded-lg hover:from-blue-600 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl text-lg"
-          >
-            Join the Circle
-          </button>
+          <div className="space-y-3">
+            <button
+              onClick={onShowForm}
+              className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-semibold py-4 px-6 rounded-lg hover:from-blue-600 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl text-lg"
+            >
+              Join the Circle
+            </button>
+            <button
+              onClick={onComplete}
+              className="w-full bg-slate-200 text-gray-900 font-semibold py-4 px-6 rounded-lg hover:bg-slate-300 transition-all"
+            >
+              Continue Exploring
+            </button>
+          </div>
         </div>
       </div>
     );

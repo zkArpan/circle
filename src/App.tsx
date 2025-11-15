@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Brain, Users, LogOut } from 'lucide-react';
+import { Brain, Users, LogOut, UserPlus } from 'lucide-react';
 import { supabase, User } from './lib/supabase';
 import OnboardingModal from './components/OnboardingModal';
 import InfiniteCanvas from './components/InfiniteCanvas';
@@ -35,9 +35,6 @@ function App() {
     const userId = localStorage.getItem('inco_user_id');
     if (userId) {
       setCurrentUser(userId);
-    } else {
-      setShowOnboarding(true);
-      setShowOnboardingForm(false);
     }
     setLoading(false);
   };
@@ -65,6 +62,9 @@ function App() {
     localStorage.removeItem('inco_user_id');
     localStorage.removeItem('inco_x_username');
     setCurrentUser(null);
+  };
+
+  const openJoinModal = () => {
     setShowOnboarding(true);
     setShowOnboardingForm(false);
   };
@@ -105,6 +105,16 @@ function App() {
                 <Brain className="w-4 h-4" />
                 <span className="font-medium">Take Quiz</span>
               </button>
+
+              {!currentUser && (
+                <button
+                  onClick={openJoinModal}
+                  className="flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span className="font-medium">Join Circle</span>
+                </button>
+              )}
 
               {currentUser && (
                 <button

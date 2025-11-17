@@ -22,18 +22,64 @@ export default function InfiniteCanvas({ users, onUserClick }: InfiniteCanvasPro
 
   const userPositions = useMemo(() => {
     const positions: Record<string, UserPosition> = {};
-    const spread = 1200;
+    const bubbleRadius = 80;
+    const padding = 10;
 
-    users.forEach((user) => {
-      const seed = parseInt(user.id.replace(/\D/g, '').substring(0, 8), 16);
-      const angle = ((seed % 360) * Math.PI) / 180;
-      const distance = 300 + ((seed >> 8) % 400);
+    if (users.length === 0) return positions;
 
-      positions[user.id] = {
-        x: Math.cos(angle) * distance,
-        y: Math.sin(angle) * distance + (spread / 2 - (seed % spread)),
-      };
-    });
+    positions[users[0].id] = { x: 0, y: 0 };
+
+    if (users.length === 1) return positions;
+
+    for (let i = 1; i < users.length; i++) {
+      let placed = false;
+      let ring = 1;
+      let maxAttempts = 360;
+      let attempt = 0;
+
+      while (!placed && attempt < maxAttempts) {
+        const angle = (attempt * 360) / Math.min(ring * 8, 360);
+        const distance = ring * (bubbleRadius * 2 + padding);
+        const x = Math.cos((angle * Math.PI) / 180) * distance;
+        const y = Math.sin((angle * Math.PI) / 180) * distance;
+
+        let collision = false;
+        for (let j = 0; j < i; j++) {
+          const otherPos = positions[users[j].id];
+          if (otherPos) {
+            const dx = x - otherPos.x;
+            const dy = y - otherPos.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const minDist = bubbleRadius * 2 + padding;
+
+            if (dist < minDist) {
+              collision = true;
+              break;
+            }
+          }
+        }
+
+        if (!collision) {
+          positions[users[i].id] = { x, y };
+          placed = true;
+        } else {
+          attempt++;
+          if (attempt >= Math.min(ring * 8, 360)) {
+            ring++;
+            attempt = 0;
+          }
+        }
+      }
+
+      if (!placed) {
+        const angle = (i * 360) / users.length;
+        const distance = 300 + (i % 5) * 100;
+        positions[users[i].id] = {
+          x: Math.cos((angle * Math.PI) / 180) * distance,
+          y: Math.sin((angle * Math.PI) / 180) * distance,
+        };
+      }
+    }
 
     return positions;
   }, [users]);

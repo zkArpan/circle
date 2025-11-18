@@ -51,6 +51,27 @@ export default function OnboardingModal({ onComplete, onShowForm, showForm }: On
 
     try {
       const cleanUsername = xUsername.trim().replace('@', '');
+
+      const { data: existingUser, error: queryError } = await supabase
+        .from('users')
+        .select('id, x_username')
+        .eq('x_username', cleanUsername)
+        .maybeSingle();
+
+      if (queryError) {
+        setError('Failed to check username. Please try again.');
+        setLoading(false);
+        setFetchingProfile(false);
+        return;
+      }
+
+      if (existingUser) {
+        localStorage.setItem('inco_user_id', existingUser.id);
+        localStorage.setItem('inco_x_username', existingUser.x_username);
+        onComplete();
+        return;
+      }
+
       const profilePhotoUrl = await fetchProfilePhoto(cleanUsername);
 
       const { data, error: insertError } = await supabase
@@ -66,11 +87,7 @@ export default function OnboardingModal({ onComplete, onShowForm, showForm }: On
         .single();
 
       if (insertError) {
-        if (insertError.code === '23505') {
-          setError('This X username is already registered');
-        } else {
-          setError('Failed to join. Please try again.');
-        }
+        setError('Failed to join. Please try again.');
         setLoading(false);
         setFetchingProfile(false);
         return;
